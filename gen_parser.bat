@@ -1,1 +1,1 @@
-pegjs --format globals --export-var desg_parser -o public/js/parser.js parser.pegjs 
+pegjs --format globals --export-var timba_parser -o public/js/parser.js parser.pegjs 

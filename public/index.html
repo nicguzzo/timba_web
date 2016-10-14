@@ -19,12 +19,13 @@
 <body ng-app="Timba" ng-controller="TimbaCtrl" ">
   
   <div class="container-fluid" id="main_cont">
-    <div class="row" id="menu_row">
+    <div class="well well-sm" id="menu_row">
       <!-- <input  class="btn" type="file" id="file-input" /> -->
-      <button class="btn" ng-click="parse_timba()">Parsear</button>
-      <button class="btn" ng-click="run_timba()">Ejecutar</button>
-      <button class="btn" ng-click="stop_timba()">Parar</button>
-      <button class="btn" ng-click="next_timba()">Siguiente</button>
+      <button class="btn" ng-click="parse()">Parsear</button>
+      <button class="btn" ng-click="run()">Ejecutar</button>
+      <button class="btn" ng-click="stop()">Parar</button>
+      <button class="btn" ng-click="next()">Siguiente</button>
+      <select class="btn"  ng-model="selectedSpeed" ng-options="x for x in speeds"></select>
     </div>
     <div class="row" id="main_row">
       <div class="col-sm-4" id="editor_cont">

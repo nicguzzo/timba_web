@@ -1,6 +1,6 @@
 var app = angular.module("Timba", []);
 
-app.controller('TimbaCtrl', function($scope) {
+app.controller('TimbaCtrl', function($scope,$http) {
   var timba;
   var palos=["bastos","copas","espadas","oros"];
   var valores=["01","02","03","04","05","06","07","10","11","12"];
@@ -10,6 +10,9 @@ app.controller('TimbaCtrl', function($scope) {
   var pilas={};
   var parsed={};
   var exec_stack=[];  
+  var level=0;
+  var interval;
+  var running=false;
   var canvas = document.getElementById('timbaCanvas');
   var ctx = canvas.getContext('2d');
   var pattern;
@@ -17,9 +20,14 @@ app.controller('TimbaCtrl', function($scope) {
   var editor = ace.edit("editor");
   editor.setTheme("ace/theme/monokai");
   editor.getSession().setMode("ace/mode/timba");
-  editor.setValue(test_tba1);
+  //editor.setValue(test_tba1);
   //$('#editor').height($('editor_cont').height());
-
+  $http.get("/test.tba").then(function(response) {
+    editor.setValue(response.data);
+  });
+  $scope.speeds=["normal","rapida","maxima"];
+  $scope.selectedSpeed="normal";
+  var speeds_ms={"normal": 200,"rapida": 60,"maxima":10};
   $scope.load_cards=function(){
     for (var p = 0, len = palos.length; p < len; p++) {
       var vals={};
@@ -32,8 +40,7 @@ app.controller('TimbaCtrl', function($scope) {
           n_images--
           if (n_images === 0) {            
             $scope.$apply(function(){
-              $scope.parse_timba()
-              
+              $scope.parse()
               //console.log($scope.salida)
               console.log($('#main_row').height());
               $('#canvas_cont').height($('#main_row').height());
@@ -107,12 +114,7 @@ app.controller('TimbaCtrl', function($scope) {
       }
       x+=120;
     }
-  }
-  var reset=function(){
-    mano=[];
-    pilas={};
-    parsed={};
-  }
+  } 
   var shuffle=function (a) {
     var j, x, i;
     for (i = a.length; i; i--) {
@@ -122,83 +124,56 @@ app.controller('TimbaCtrl', function($scope) {
       a[j] = x;
     }
   }
-  $scope.parse_timba= function (){ 
-    console.log("parsing timba!!");
-    reset();
-    reset_stack();
-    try{
-      //call the peg parser, if all went well create json representation of the tree, and create the stacks
-      parsed=timba_parser.parse(editor.getValue());
-      $scope.salida =JSON.stringify(parsed, null, 2);
-      for (var p = 0, len = parsed.pilas.length; p < len; p++) {        
-        pilas[parsed.pilas[p].nombre]=[];
-        switch(parsed.pilas[p].contenido.tipo){
-          case "vacio":
-          break;
-          case "lista":
-            for (var c = 0, len2 = parsed.pilas[p].contenido.length; c < len2; c++) {          
-              pilas[parsed.pilas[p].nombre].push(parsed.pilas[p].contenido[c]);
-            }
-          break;
-          case "mazo_completo":
-            var e=parsed.pilas[p].contenido.estado;
-            var ee=e;
-            for (var i = 0, plen = palos.length; i < plen; i++) {              
-              for (var j = 0, vlen = valores.length; j < vlen; j++) {
-                //console.log({num: parseInt(valores[j]),palo: palos[i]})
-                if (e==2){
-                  ee=Math.floor(Math.random() * 2);
-                }
-                pilas[parsed.pilas[p].nombre].push({num: parseInt(valores[j]),palo: palos[i],estado: ee})
-              }
-            }
-            shuffle(pilas[parsed.pilas[p].nombre]);
-          break;
-          case "mazo_n_cartas":
-            var e=parsed.pilas[p].contenido.estado;
-            var ee=e;
-            var tmp=[];
-            for (var i = 0, plen = palos.length; i < plen; i++) {
-              for (var j = 0, vlen = valores.length; j < vlen; j++) {
-                //console.log({num: parseInt(valores[j]),palo: palos[i]})
-                if (e==2){
-                  ee=Math.floor(Math.random() * 2);
-                }
-                tmp.push({num: parseInt(valores[j]),palo: palos[i],estado: ee})
-              }
-            }
-            for (var k = 0; k < parsed.pilas[p].contenido.n ; k++){
-              var i=Math.floor(Math.random() * tmp.length);              
-              pilas[parsed.pilas[p].nombre].push(tmp[i]);
-              tmp.splice(i,1);
-            }          
-          break;
-        }        
-      }
-      init_stack();
-    }catch(err){
-      // in case of syntax error, create error message and display it
-      console.dir(err);
-      if (!(typeof err.expected === 'undefined')){
-        var expected=""
-        err.expected.forEach(function (item,index,arr) {
-          if (item.type == "literal"){
-            expected+=", \""+item.text+"\"";
+  var init_pilas=function(){
+    pilas=[];
+    for (var p = 0, len = parsed.pilas.length; p < len; p++) {        
+      pilas[parsed.pilas[p].nombre]=[];
+      switch(parsed.pilas[p].contenido.tipo){
+        case "vacio":
+        break;
+        case "lista":
+          for (var c = 0, len2 = parsed.pilas[p].contenido.length; c < len2; c++) {          
+            pilas[parsed.pilas[p].nombre].push(parsed.pilas[p].contenido[c]);
           }
-        });
-        $scope.salida = "se esperaba \"" +expected+ " pero se encontró \""+ err.found+"\" en la linea "+err.location.start.line+" columna "+err.location.start.column
-      }else{
-        $scope.salida=err;
-      }
-      //var range = new Range(err.location.start.line-1, err.location.start.column-1, err.location.end.line-1, err.location.end.column-1);
-      //var marker = editor.getSession().addMarker(range,"ace_selected_word", "text");
-      //editor.getSession().removeMarker(marker);        
-      //editor.getSession().addMarker(range,"ace_active_line","background");
-    }        
-    update_canvas();
-  }
+        break;
+        case "mazo_completo":
+          var e=parsed.pilas[p].contenido.estado;
+          var ee=e;
+          for (var i = 0, plen = palos.length; i < plen; i++) {              
+            for (var j = 0, vlen = valores.length; j < vlen; j++) {
+              //console.log({num: parseInt(valores[j]),palo: palos[i]})
+              if (e==2){
+                ee=Math.floor(Math.random() * 2);
+              }
+              pilas[parsed.pilas[p].nombre].push({num: parseInt(valores[j]),palo: palos[i],estado: ee})
+            }
+          }
+          shuffle(pilas[parsed.pilas[p].nombre]);
+        break;
+        case "mazo_n_cartas":
+          var e=parsed.pilas[p].contenido.estado;
+          var ee=e;
+          var tmp=[];
+          for (var i = 0, plen = palos.length; i < plen; i++) {
+            for (var j = 0, vlen = valores.length; j < vlen; j++) {
+              //console.log({num: parseInt(valores[j]),palo: palos[i]})
+              if (e==2){
+                ee=Math.floor(Math.random() * 2);
+              }
+              tmp.push({num: parseInt(valores[j]),palo: palos[i],estado: ee})
+            }
+          }
+          for (var k = 0; k < parsed.pilas[p].contenido.n ; k++){
+            var i=Math.floor(Math.random() * tmp.length);              
+            pilas[parsed.pilas[p].nombre].push(tmp[i]);
+            tmp.splice(i,1);
+          }          
+        break;
+      }        
+    }
+  }  
   var _run=function(sentencias){    
-    var l=sentencias.length;    
+    var l=sentencias.length;
     for(var i=0;i<l;i++){
       //console.log(sentencias[i].type)
       switch(sentencias[i].type)
@@ -215,6 +190,13 @@ app.controller('TimbaCtrl', function($scope) {
               }
             break;
             case "i":
+              if(cond(sentencias[i].conditions)){
+                _run(sentencias[i].on_true);
+              }else{
+                if(sentencias[i].on_false!=null){
+                  _run(sentencias[i].on_false);
+                }
+              }
             break;
           }
         break;
@@ -279,13 +261,35 @@ app.controller('TimbaCtrl', function($scope) {
             break;
           }
         break;
+        case "estado":
+          if(conditions[i].boca=="abajo"){
+            switch(conditions[i].cond){
+              case "e":
+                r=(mano[0].estado==0);
+              break;
+              case "n":
+                r=(mano[0].estado!=0);
+              break;
+            }
+          }else{
+            if(conditions[i].boca=="arriba"){
+              switch(conditions[i].cond){
+                case "e":
+                  r=(mano[0].estado==1);
+                break;
+                case "n":
+                  r=(mano[0].estado!=1);
+                break;
+              }
+            }
+          }
+        break;
       }
     }
     //console.log(r);
     return r;
   }
-  var level=0;
-  var interval;
+  
   var run_next=function(){    
     var a=exec_stack[level];
     //console.log("level: "+ level);
@@ -304,19 +308,29 @@ app.controller('TimbaCtrl', function($scope) {
             if(cond(s.conditions)){
               level++;
               //console.log("pushing stack");
-              exec_stack.push({ "i":0,"n": s.sentencias.length ,"s": s.sentencias,"w":true,"c":s.conditions})
+              exec_stack.push({ "i":0,"n": s.sentencias.length ,"s": s.sentencias,"control":"w","c":s.conditions})
               return;
-            }//else{
-              //exec_stack.pop();
-              //level--;
-            //}              
+            }
           break;
           case "i":
+            if(cond(s.conditions)){
+              level++;
+              //console.log("pushing stack if");
+              exec_stack.push({ "i":0,"n": s.on_true.length ,"s": s.on_true,"control":"if","c":s.conditions})
+              return;
+            }else{              
+              //console.log("pushing stack");
+              if (s.on_false!= null){
+                level++;
+                exec_stack.push({ "i":0,"n": s.on_false.length ,"s": s.on_false, "control":"if","c":s.conditions})
+                return;
+              }              
+            }
           break;
         }
       break;
     }
-    if(a.w){//es un mientras
+    if(a.c=="w"){//es un mientras
       //console.log("mientras");
       exec_stack[level].i++;
       if(exec_stack[level].i>=exec_stack[level].n){        
@@ -341,95 +355,77 @@ app.controller('TimbaCtrl', function($scope) {
       clearInterval(interval);
     }
   }
-  var reset_stack=function(){
-    clearInterval(interval);
-    exec_stack=[];    
-    level=-1;
-    
-  }
+  
   var init_stack=function(){
-    if( parsed.sentencias.length >0){
+    level=-1;
+    mano=[];
+    exec_stack=[];
+    running=false;
+    if( parsed.sentencias.length >0){      
       level=0;
-      exec_stack.push({ "i":0,"n":parsed.sentencias.length ,"s": parsed.sentencias,"w":false,"c":false});    
+      exec_stack.push({ "i":0,"n":parsed.sentencias.length ,"s": parsed.sentencias,"control": "","c":false});    
     }
   }
-  $scope.next_timba=function(){
+  $scope.next=function(){
+    if(!running){
+      init_stack();
+      init_pilas();      
+      running=true;
+      update_canvas();
+    }
     if(level>=0){
       run_next();
+    }else{
+      $scope.stop();
     }
   }
-  $scope.stop_timba=function(){
+  $scope.stop=function(){
     clearInterval(interval);
+    running=false;
   }
-  $scope.run_timba=function(){    
-    interval=setInterval(function(){
-      run_next();
-    }, 100);    
-    //_run(parsed.sentencias);
-    //update_canvas();
+  $scope.run=function(){
+    init_stack();
+    init_pilas();
+    update_canvas();
+    running=true;
+    if ($scope.selectedSpeed=="maxima"){
+      _run(parsed.sentencias);
+    }else{
+      interval=setInterval(function(){
+        run_next();
+      }, speeds_ms[$scope.selectedSpeed]);    
+    }
+    
+    update_canvas();
+  }
+  $scope.parse= function (){ 
+    console.log("parsing timba!!");
+    parsed={};
+    try{
+      //call the peg parser, if all went well create json representation of the tree, and create the stacks
+      parsed=timba_parser.parse(editor.getValue().toLowerCase());
+      $scope.salida =JSON.stringify(parsed, null, 2);      
+      init_pilas();      
+      update_canvas();
+    }catch(err){
+      // in case of syntax error, create error message and display it
+      console.dir(err);
+      if (!(typeof err.expected === 'undefined')){
+        var expected=""
+        err.expected.forEach(function (item,index,arr) {
+          if (item.type == "literal"){
+            expected+=", \""+item.text+"\"";
+          }
+        });
+        $scope.salida = "se esperaba \"" +expected+ " pero se encontró \""+ err.found+"\" en la linea "+err.location.start.line+" columna "+err.location.start.column
+      }else{
+        $scope.salida=err;
+      }
+      //var range = new Range(err.location.start.line-1, err.location.start.column-1, err.location.end.line-1, err.location.end.column-1);
+      //var marker = editor.getSession().addMarker(range,"ace_selected_word", "text");
+      //editor.getSession().removeMarker(marker);        
+      //editor.getSession().addMarker(range,"ace_active_line","background");
+    }    
   }
   init();
 });
-//window.onload = 
-
-var test_tba0 ="definicion de programa\n\n\
-  tome de pila AA\n\
-;\n\
-ucp ejecute con las siguientes cartas:\n\n\
-la pila AA tiene un mazo,\n\
-pila BB no tiene cartas\n\
-."
-
-var test_tba1 ="definicion de programa\n\n\
-mientras la pila AA no esta vacia\n\
-  tome de pila AA,\n\
-  inviertala,\n\
-  depositela en pila BB\n\
-repita\n\
-;\n\
-ucp ejecute con las siguientes cartas:\n\n\
-la pila AA tiene un mazo de 10 cartas^,\n\
-pila BB no tiene cartas\n\
-."
-
-var test_tba="definicion de programa\n\
-#test de sintaxis timba, ir agregando los casos...\n\
-mientras la pila pilaa no esta vacia\n\
-  tome una de pila pilaa,\n\
-  si la carta esta boca abajo\n\
-    inviertala\n\
-  sino nada mas,  \n\
-  si carta es menor que 10\n\
-    depositela en pila pilab\n\
-  sino \n\
-    deposite la carta en pila pilac\n\
-  nada mas,\n\
-  tome una de pila pilaa,\n\
-  si la carta esta boca abajo\n\
-    inviertala\n\
-  sino nada mas,\n\
-  si carta es mayor que 5\n\
-    depositela en pila pilab\n\
-  sino \n\
-    deposite la carta en pila pilac\n\
-  nada mas,\n\
-  tome una de pila pilaa,\n\
-  si la carta esta boca abajo\n\
-    inviertala\n\
-  sino nada mas,  \n\
-  si la carta no es de valor menor o igual a 5\n\
-    depositela en pila pilad\n\
-  sino \n\
-    si la carta es del palo oros\n\
-      deposite la carta en pila pilae\n\
-    sino nada mas\n\
-  nada mas\n\
-repita\n\
-\n\
-;\n\
-ucp ejecute con las siguientes cartas:  \n\
-pila pilaa tiene un mazo de 30 cartas _^,\n\
-pila pilab no tiene cartas,\n\
-pila pilac no tiene cartas,\n\
-pila pilad no tiene cartas,\n\
-pila pilae no tiene cartas.";

@@ -1,6 +1,6 @@
 start = programa
 
-programa =  defprog sentencias: sentencias _ ";" _ defpilas _ pilas: lista_de_pilas? _ "."  { return {sentencias: sentencias,pilas: pilas}; }
+programa = _ defprog sentencias: sentencias _ ";" _ defpilas _ pilas: lista_de_pilas? _ "." _  { return {sentencias: sentencias,pilas: pilas}; }
 
 defprog  = "definicion" __ "de" __ "programa" __
 
@@ -38,16 +38,8 @@ iterativa = "mientras" __ condiciones: condicion __ sentencias: sentencias _ "re
   return {type: 'c', control: "w",conditions: condiciones, sentencias: sentencias };
 }
 
-seleccion = "si" __ condiciones: condicion __ on_true: sentencias? __ "sino" __ on_false: (sentencias __ )? "nada" __ "mas" _ {
-  var f=[];
-  var t=[];
-  if (!(typeof on_true === 'undefined')){
-    f=on_false;
-  }
-  if (!(typeof on_false === 'undefined')){
-    f=on_false;
-  }
-  return {type: 'c', control: "i",conditions: condiciones, on_true: t,on_false: f};
+seleccion = "si" __ condiciones: condicion __ on_true: (s:sentencias _ {return s;})? "sino" __ on_false: (s:sentencias _ {return s;})? "nada" __ "mas" _ {
+  return {type: 'c', control: "i",conditions: condiciones, on_true: on_true,on_false: on_false};
 }
 
 condicion =  head: condicion_simple tail:( __ ( and: "y" / or: "o" )  __ cs: condicion_simple { return cs;} )* {
@@ -59,21 +51,24 @@ condicion =  head: condicion_simple tail:( __ ( and: "y" / or: "o" )  __ cs: con
 }
 
 condicion_simple = c:condicion_pila_vacia {return c;}
+                  / cc:condicion_carta {return cc;}
 
 condicion_pila_vacia = pila __ name: nombrepila __ cond: esta_no_esta  __ "vacia" {
-
   return {type: "empty", name: name, cond: cond};
 }
-esta_no_esta = empty: ( "esta" ) / not_empty: ( "no" __ "esta"  ) {
-  var result={};
-  if (!(typeof empty === 'undefined')){
-    result = "e";
-  }
-  if (!(typeof not_empty === 'undefined')){
+
+condicion_carta = carta __ condi: esta_no_esta __ "boca" __ boca:("arriba" / "abajo") {
+  return {type: "estado", cond: condi, boca: boca};
+}
+
+esta_no_esta = n:( m:"no" __ )? "esta"  {
+  var result="e";
+  if (n!=null){
     result = "n";
-  }
+  }  
   return result;
 }
+
 
 lista_de_pilas = head: descripcion_de_pila tail:(_ comma _ desc:descripcion_de_pila _ {return desc;} )* {
   var result = [];
@@ -97,7 +92,6 @@ mazo =  "tiene" __ "un" __ "mazo" n:(__ "de" __ m:[0-9]+ __ "cartas" {return m;}
   var m=0;
   var s=0;  
   if (!(typeof e === 'undefined')){
-    console.log("e: "+e);
     if(e=="^"){
       s=1;
     }else{

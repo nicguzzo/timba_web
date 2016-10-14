@@ -4,7 +4,7 @@ var fs = require('fs')
 var path = require('path')
 var baseDirectory = "public"   // or whatever base directory you want
 
-var port = 9615
+var port = 9999
 
 http.createServer(function (request, response) {
    try {
