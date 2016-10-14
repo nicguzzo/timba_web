@@ -1,0 +1,14 @@
+definicion de programa
+mientras la pila AA no esta vacia
+  tome de pila AA,
+  si la carta esta boca abajo
+    inviertala
+  sino nada mas,
+  depositela en pila BB
+repita
+;
+ucp ejecute con las siguientes cartas:
+la pila AA tiene un mazo de 20 cartas_^,
+pila BB no tiene cartas,
+pila CC no tiene cartas
+.

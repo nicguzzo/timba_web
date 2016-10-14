@@ -1,0 +1,39 @@
+definicion de programa
+#test de sintaxis timba, ir agregando los casos...
+mientras la pila pilaa no esta vacia
+  tome una de pila pilaa,
+  si la carta esta boca abajo
+    inviertala
+  sino nada mas,  
+  si carta es menor que 10
+   depositela en pila pilab
+  sino 
+   deposite la carta en pila pilac
+  nada mas,
+  tome una de pila pilaa,
+  si la carta esta boca abajo
+    inviertala
+  sino nada mas,
+  si carta es mayor que 5
+   depositela en pila pilab
+  sino 
+   deposite la carta en pila pilac
+  nada mas,
+  tome una de pila pilaa,
+  si la carta esta boca abajo
+    inviertala
+  sino nada mas,  
+  si la carta no es de valor menor o igual a 5
+   depositela en pila pilad
+  sino 
+   deposite la carta en pila pilae
+  nada mas
+repita
+
+;
+ucp ejecute con las siguientes cartas:	
+pila pilaa tiene un mazo de 30 cartas _^,
+pila pilab no tiene cartas,
+pila pilac no tiene cartas,
+pila pilad no tiene cartas,
+pila pilae no tiene cartas.
