@@ -1,4 +1,4 @@
-var app = angular.module("Timba", []);
+var app = angular.module("Timba", ['angular-json-tree']);
 
 app.controller('TimbaCtrl', function($scope,$http) {
   var timba;
@@ -8,8 +8,8 @@ app.controller('TimbaCtrl', function($scope,$http) {
   var carta_back;
   var mano=[];
   var pilas={};
-  var parsed={};
-  var exec_stack=[];  
+  $scope.parsed={};
+  $scope.exec_stack=[]; 
   var level=0;
   var interval;
   var running=false;
@@ -126,18 +126,18 @@ app.controller('TimbaCtrl', function($scope,$http) {
   }
   var init_pilas=function(){
     pilas=[];
-    for (var p = 0, len = parsed.pilas.length; p < len; p++) {        
-      pilas[parsed.pilas[p].nombre]=[];
-      switch(parsed.pilas[p].contenido.tipo){
+    for (var p = 0, len = $scope.parsed.pilas.length; p < len; p++) {        
+      pilas[$scope.parsed.pilas[p].nombre]=[];
+      switch($scope.parsed.pilas[p].contenido.tipo){
         case "vacio":
         break;
         case "lista":
-          for (var c = 0, len2 = parsed.pilas[p].contenido.length; c < len2; c++) {          
-            pilas[parsed.pilas[p].nombre].push(parsed.pilas[p].contenido[c]);
+          for (var c = 0, len2 = $scope.parsed.pilas[p].contenido.list.length; c < len2; c++) {          
+            pilas[$scope.parsed.pilas[p].nombre].push($scope.parsed.pilas[p].contenido.list[c]);
           }
         break;
         case "mazo_completo":
-          var e=parsed.pilas[p].contenido.estado;
+          var e=$scope.parsed.pilas[p].contenido.estado;
           var ee=e;
           for (var i = 0, plen = palos.length; i < plen; i++) {              
             for (var j = 0, vlen = valores.length; j < vlen; j++) {
@@ -145,13 +145,13 @@ app.controller('TimbaCtrl', function($scope,$http) {
               if (e==2){
                 ee=Math.floor(Math.random() * 2);
               }
-              pilas[parsed.pilas[p].nombre].push({num: parseInt(valores[j]),palo: palos[i],estado: ee})
+              pilas[$scope.parsed.pilas[p].nombre].push({num: parseInt(valores[j]),palo: palos[i],estado: ee})
             }
           }
-          shuffle(pilas[parsed.pilas[p].nombre]);
+          shuffle(pilas[$scope.parsed.pilas[p].nombre]);
         break;
         case "mazo_n_cartas":
-          var e=parsed.pilas[p].contenido.estado;
+          var e=$scope.parsed.pilas[p].contenido.estado;
           var ee=e;
           var tmp=[];
           for (var i = 0, plen = palos.length; i < plen; i++) {
@@ -163,9 +163,9 @@ app.controller('TimbaCtrl', function($scope,$http) {
               tmp.push({num: parseInt(valores[j]),palo: palos[i],estado: ee})
             }
           }
-          for (var k = 0; k < parsed.pilas[p].contenido.n ; k++){
+          for (var k = 0; k < $scope.parsed.pilas[p].contenido.n ; k++){
             var i=Math.floor(Math.random() * tmp.length);              
-            pilas[parsed.pilas[p].nombre].push(tmp[i]);
+            pilas[$scope.parsed.pilas[p].nombre].push(tmp[i]);
             tmp.splice(i,1);
           }          
         break;
@@ -204,18 +204,25 @@ app.controller('TimbaCtrl', function($scope,$http) {
     }
   }
   var tomar=function(name){
-    if(mano.length==0){
-      mano.push(pilas[name].pop())
-      //console.log(mano)          
+    if (pilas[name].length>0){
+      if(mano.length==0){
+        mano.push(pilas[name].pop())
+        //console.log(mano)          
+      }else{
+        $scope.stop();
+        console.log("no puedo tomar, ya tengo carta en la mano");
+      } 
     }else{
-      console.log("no puedo tomar, ya tengo carta en la mano")
+      $scope.stop();
+      console.log("no puedo tomar, la pila "+name+" esta vacia");
     } 
   }
   var depositar=function(name){
     if(mano.length==1){
       pilas[name].push(mano.pop());          
     }else{
-      console.log("no puedo depositar, no tengo carta en la mano")
+      console.log("no puedo depositar, no tengo carta en la mano");
+      $scope.stop();
     }          
   }
   var invertir=function(){
@@ -228,11 +235,12 @@ app.controller('TimbaCtrl', function($scope,$http) {
       }
       //console.log("after "+mano.estado+"\n\n");
     }else{
-      console.log("no puedo invertir, no tengo carta en la mano")
+      console.log("no puedo invertir, no tengo carta en la mano");
+      $scope.stop();
     } 
   };
   var run_op=function(op){
-    //  console.log(op)    
+    console.log(op)    
     switch(op.op){
       case "t"://tomar
         tomar(op.name);
@@ -252,6 +260,10 @@ app.controller('TimbaCtrl', function($scope,$http) {
     for(var i=0;i<c;i++){
       switch(conditions[i].type){
         case "empty":
+          if (!pilas.hasOwnProperty(conditions[i].name)){
+            $scope.stop();
+            console.log("no puedo comparar, la pila "+conditions[i].name+" no existe");
+          }
           switch(conditions[i].cond){
             case "e":
               r=(pilas[conditions[i].name].length==0);              
@@ -262,27 +274,70 @@ app.controller('TimbaCtrl', function($scope,$http) {
           }
         break;
         case "estado":
-          if(conditions[i].boca=="abajo"){
-            switch(conditions[i].cond){
-              case "e":
-                r=(mano[0].estado==0);
-              break;
-              case "n":
-                r=(mano[0].estado!=0);
-              break;
-            }
-          }else{
-            if(conditions[i].boca=="arriba"){
-              switch(conditions[i].cond){
-                case "e":
-                  r=(mano[0].estado==1);
-                break;
-                case "n":
-                  r=(mano[0].estado!=1);
-                break;
-              }
-            }
+          if(mano.length!=1){
+            console.log("no puedo comparar, no tengo carta en la mano");
+            $scope.stop();
           }
+          switch(conditions[i].cond){
+            case "e":
+              r=(mano[0].estado==0);
+            break;
+            case "n":
+              r=(mano[0].estado!=0);
+            break;
+          }
+        break;
+        case "valor":     
+          if(mano.length!=1){
+            console.log("no puedo comparar, no tengo carta en la mano");
+            $scope.stop();
+          }     
+          switch(conditions[i].rel){
+            case "eq":
+              r= mano[0].num == conditions[i].num
+            break;
+            case "ne":
+              r= mano[0].num != conditions[i].num
+            break;
+            case "gt":
+              r= mano[0].num >  conditions[i].num
+            break;
+            case "lt":
+              r= mano[0].num <  conditions[i].num
+            break;
+            case "gte":
+              r= mano[0].num >= conditions[i].num
+            break;
+            case "lte":
+              r= mano[0].num <= conditions[i].num
+            break;
+          }
+          switch(conditions[i].cond){
+            case "e":
+              
+            break;
+            case "n":
+              r=!r;
+            break;
+          }
+        break;
+        case "palo":
+          if(mano.length!=1){
+            console.log("no puedo comparar, no tengo carta en la mano");
+            $scope.stop();
+          }
+          switch(conditions[i].cond){
+            case "e":
+              r=(mano[0].palo==conditions[i].palo);
+            break;
+            case "n":
+              r=(mano[0].palo!=conditions[i].palo);
+            break;
+          }
+        break;
+        case "valor_tope":
+        break;
+        case "palo_tope":
         break;
       }
     }
@@ -291,11 +346,10 @@ app.controller('TimbaCtrl', function($scope,$http) {
   }
   
   var run_next=function(){    
-    var a=exec_stack[level];
-    //console.log("level: "+ level);
-    //console.log(a);
-    //console.dir(a.s[a.i]);
-    var s=a.s[a.i];
+    
+    console.log("level: "+ level+" i="+$scope.exec_stack[level].i +" n="+$scope.exec_stack[level].n);
+    
+    var s=$scope.exec_stack[level].s[$scope.exec_stack[level].i];   
     switch(s.type)
     {
       case "o"://operativas
@@ -306,49 +360,58 @@ app.controller('TimbaCtrl', function($scope,$http) {
         {
           case "w":
             if(cond(s.conditions)){
-              level++;
-              //console.log("pushing stack");
-              exec_stack.push({ "i":0,"n": s.sentencias.length ,"s": s.sentencias,"control":"w","c":s.conditions})
+              console.log("push while");
+              level++;              
+              $scope.exec_stack.push({ "i":0,"n": s.sentencias.length ,"s": s.sentencias,"control":"w","c":s.conditions})
               return;
             }
           break;
           case "i":
             if(cond(s.conditions)){
               level++;
-              //console.log("pushing stack if");
-              exec_stack.push({ "i":0,"n": s.on_true.length ,"s": s.on_true,"control":"if","c":s.conditions})
+              console.log("push if t");
+              $scope.exec_stack.push({ "i":0,"n": s.on_true.length ,"s": s.on_true,"control":"if","c":s.conditions})
               return;
             }else{              
-              //console.log("pushing stack");
+              console.log("push if f");
               if (s.on_false!= null){
                 level++;
-                exec_stack.push({ "i":0,"n": s.on_false.length ,"s": s.on_false, "control":"if","c":s.conditions})
+                $scope.exec_stack.push({ "i":0,"n": s.on_false.length ,"s": s.on_false, "control":"if","c":s.conditions})
                 return;
-              }              
+              } 
             }
           break;
         }
       break;
     }
-    if(a.c=="w"){//es un mientras
-      //console.log("mientras");
-      exec_stack[level].i++;
-      if(exec_stack[level].i>=exec_stack[level].n){        
-        exec_stack[level].i=0;
-        if(cond(a.c))//evaluar condicion
+    
+    $scope.exec_stack[level].i++;
+    if($scope.exec_stack[level].control=="w"){//es un mientras
+      console.log("mientras");
+      if($scope.exec_stack[level].i>=$scope.exec_stack[level].n){        
+        $scope.exec_stack[level].i=0;
+        if(cond($scope.exec_stack[level].c))//evaluar condicion
         {
-          //console.log("mientras true");
+          console.log("mientras true");
         }else{
-          //console.log("mientras false");
-          exec_stack.pop();
+          console.log("mientras false");
+          $scope.exec_stack.pop();
           level--;
+          if(level>=0){
+            console.log("level: "+level);
+            $scope.exec_stack[level].i++;
+          }
         }
-      }      
+      }
     }else{
-      exec_stack[level].i++;
-      if(exec_stack[level].i>=exec_stack[level].n){
-        exec_stack.pop();
+      if($scope.exec_stack[level].i>=$scope.exec_stack[level].n){ 
+        console.log("pop");    
+        $scope.exec_stack.pop();
         level--;
+        if(level>=0){
+          console.log("level: "+level);
+          $scope.exec_stack[level].i++;
+        }
       }
     }
     if(level<0){
@@ -359,17 +422,16 @@ app.controller('TimbaCtrl', function($scope,$http) {
   var init_stack=function(){
     level=-1;
     mano=[];
-    exec_stack=[];
+    $scope.exec_stack=[];
     running=false;
-    if( parsed.sentencias.length >0){      
+    if( $scope.parsed.sentencias && $scope.parsed.sentencias.length >0){      
       level=0;
-      exec_stack.push({ "i":0,"n":parsed.sentencias.length ,"s": parsed.sentencias,"control": "","c":false});    
+      $scope.exec_stack.push({ "i":0,"n":$scope.parsed.sentencias.length ,"s": $scope.parsed.sentencias,"control": "","c":false});    
     }
   }
   $scope.next=function(){
     if(!running){
-      init_stack();
-      init_pilas();      
+      init_stack();    
       running=true;
       update_canvas();
     }
@@ -389,7 +451,7 @@ app.controller('TimbaCtrl', function($scope,$http) {
     update_canvas();
     running=true;
     if ($scope.selectedSpeed=="maxima"){
-      _run(parsed.sentencias);
+      _run($scope.parsed.sentencias);
     }else{
       interval=setInterval(function(){
         run_next();
@@ -400,11 +462,12 @@ app.controller('TimbaCtrl', function($scope,$http) {
   }
   $scope.parse= function (){ 
     console.log("parsing timba!!");
-    parsed={};
+    init_stack();
+    $scope.parsed={};
     try{
       //call the peg parser, if all went well create json representation of the tree, and create the stacks
-      parsed=timba_parser.parse(editor.getValue().toLowerCase());
-      $scope.salida =JSON.stringify(parsed, null, 2);      
+      $scope.parsed=timba_parser.parse(editor.getValue().toLowerCase());
+      //$scope.salida =JSON.stringify($scope.parsed, null, 2);      
       init_pilas();      
       update_canvas();
     }catch(err){

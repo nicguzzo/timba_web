@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"op",
+				"op_logico"
+			],
+			[
+				"nom",
+				"nombrepila"
+			],
+			[
 				"esta",
 				"estado"
 			],
@@ -259,6 +267,67 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "public/index.html",
+			"settings":
+			{
+				"buffer_size": 2066,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "public/js/timba.js",
+			"settings":
+			{
+				"buffer_size": 14848,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "public/css/timba.css",
+			"settings":
+			{
+				"buffer_size": 377,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/Z/pot.c",
+			"settings":
+			{
+				"buffer_size": 501,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Projects/counter/Makefile",
+			"settings":
+			{
+				"buffer_size": 124,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "parser.pegjs",
+			"settings":
+			{
+				"buffer_size": 6066,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Projects/timba/doc/timba_bnf.txt",
+			"settings":
+			{
+				"buffer_size": 2490,
+				"line_ending": "Windows"
+			}
+		}
 	],
 	"build_system": "Packages/Ruby/Ruby.sublime-build",
 	"build_system_choices":
@@ -322,18 +391,40 @@
 	"expanded_folders":
 	[
 		"/C/Projects/timba2",
-		"/C/Projects/timba2/js",
-		"/C/Projects/timba2/views"
+		"/C/Projects/timba2/public",
+		"/C/Projects/timba2/public/css",
+		"/C/Projects/timba2/public/js"
 	],
 	"file_history":
 	[
+		"/Z/exp.c",
+		"/D/reprap/tarjeta/tarjeta.scad",
+		"/C/Users/nicgu/Downloads/OctoUpload.py",
+		"//192.168.1.117/Users/emi/Documents/iguales o distintas.tba",
+		"/C/Projects/timba2/public/test.tba",
+		"/C/Users/nicgu/Documents/timba/interc.tba",
+		"/C/Projects/timba/timba.rb",
+		"/C/Projects/timba/mainwindow.rb",
+		"/C/Projects/timba/parser.rb",
+		"/C/Projects/timba2/public/css/timba.css",
+		"/C/Projects/timba2/server.js",
+		"/C/Projects/Marlin/Marlin/thermistortables.h",
+		"/D/reprap/Marlin-Release - prusa i3/Marlin/Configuration.h",
+		"/C/Projects/Marlin/Marlin/Configuration.h",
+		"/H/octopi-network.txt",
+		"/D/reprap/Marlin-Release - prusa i3/Marlin/thermistortables.h",
+		"/C/Projects/Marlin/Marlin/thermistornames.h",
+		"/C/Projects/timba2/.git/config",
+		"/C/Projects/design_lang/public/js/design_lang.js",
+		"/C/Projects/timba2/test.tba",
+		"/C/Projects/timba2/gen_parser.bat",
+		"/C/Projects/timba2/.gitignore",
 		"/C/Projects/timba/doc/timba_bnf.txt",
 		"/C/Projects/timba2/index.html",
 		"/C/Projects/timba2/css/timba.css",
 		"/C/Projects/timba2/js/timba.js",
 		"/C/Projects/timba2/js/parser.pegjs",
 		"/C/Projects/design_lang/parser.pegjs",
-		"/C/Projects/timba/parser.rb",
 		"/Z/suministros3/src/public/auth.html",
 		"/Z/suministros3/src/public/main.html",
 		"/C/Projects/timba2/js/gen_parser.bat",
@@ -433,32 +524,11 @@
 		"/C/Projects/Draco/data/img/widgets/skin.yaml",
 		"/C/Projects/Draco/CMakeLists.txt",
 		"/C/Projects/Solid3d/test.vcxproj",
-		"/C/Projects/Solid3d/widgets.vcxproj",
-		"/C/Projects/Solid3d/common.props",
-		"/C/Projects/Solid3d/link.props",
-		"/C/Projects/test/premake5.lua",
-		"/C/Projects/Draco/test/test2.cpp",
-		"/C/Projects/Draco/engine/animation.h",
-		"/C/Projects/Draco/engine/animation.cpp",
-		"/C/Projects/Draco/shaders/glsl/generate.lua",
-		"/C/Projects/Draco/shaders/glsl/gen.bat",
-		"/C/Projects/Draco/shaders/glsl/gen.sh",
-		"/C/Projects/Draco/engine/animator.cpp",
-		"/C/Projects/Draco/.gitignore",
-		"/C/Projects/Draco/engine/opengl/shader_gl.cpp",
-		"/C/Projects/Draco/engine/opengl/flat_shader_gl.cpp",
-		"/C/Projects/Draco/engine/opengl/shader_gl.h",
-		"/C/Projects/Draco/engine/opengl/shaders/wire_shader_gl.cpp",
-		"/C/Projects/Draco/engine/opengl/shaders/widget_shader_gl.cpp",
-		"/C/Projects/Draco/engine/opengl/shaders/text_shader_gl.cpp",
-		"/C/Projects/Draco/engine/opengl/shaders/smooth_shader_gl.cpp",
-		"/C/Projects/Draco/engine/opengl/shaders/flat_shader_gl.cpp",
-		"/C/Projects/Draco/engine/opengl/smooth_shader_gl.cpp",
-		"/C/Projects/Draco/engine/opengl/widget_shader_gl.cpp"
+		"/C/Projects/Solid3d/widgets.vcxproj"
 	],
 	"find":
 	{
-		"height": 36.0
+		"height": 38.0
 	},
 	"find_in_files":
 	{
@@ -475,6 +545,36 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"clear",
+			"parsed",
+			"exec_stack",
+			"v",
+			"paren*",
+			"relac",
+			"suits",
+			"card",
+			"   ",
+			"  ",
+			"stack",
+			"stackname",
+			"quetopede",
+			"paloquetopede",
+			"}",
+			")",
+			"'",
+			"str(",
+			"|",
+			">>",
+			"space",
+			"space?",
+			"space",
+			"/",
+			"3950",
+			"reset_stack",
+			"init",
+			"\\n\\",
+			"\\n\\n\\",
+			"_timba",
 			"this.",
 			"pat",
 			"timba_state",
@@ -572,37 +672,7 @@
 			"DeudoresUI",
 			"deudores",
 			"Plan",
-			"plan",
-			"tabla_planes",
-			"@ui.debe",
-			"DONE",
-			"done",
-			"@ui.cobrar",
-			"cobrar",
-			"boton_editar_socio",
-			"name",
-			"paid",
-			"tabla_socios",
-			"set_inscr_anual",
-			"paid",
-			"Boolean",
-			"@ui.plan",
-			"invalid",
-			"id",
-			"clases",
-			"count",
-			"plan.",
-			"o",
-			"invalid",
-			"inscr_plan",
-			"set_inscr_anual",
-			"codi",
-			"inscr",
-			"plan.",
-			"inscr",
-			"inscripciones",
-			"@plan",
-			"px"
+			"plan"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -626,14 +696,221 @@
 	"groups":
 	[
 		{
+			"selected": 4,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "public/index.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2066,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1521,
+								1521
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 594.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "public/js/timba.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14848,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7932,
+								7932
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1639.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "public/css/timba.css",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 377,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								54,
+								54
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 95.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/Z/pot.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 501,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								189,
+								189
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/C/Projects/counter/Makefile",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 124,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "parser.pegjs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6066,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3535,
+								3535
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1892.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/C/Projects/timba/doc/timba_bnf.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2490,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1327,
+								1327
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 28.0
+		"height": 30.0
 	},
 	"input":
 	{
@@ -674,7 +951,7 @@
 	"project": "timba2.sublime-project",
 	"replace":
 	{
-		"height": 52.0
+		"height": 56.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -712,7 +989,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 293.0,
+	"side_bar_width": 171.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

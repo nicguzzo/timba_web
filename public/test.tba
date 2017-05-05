@@ -5,10 +5,40 @@ mientras la pila AA no esta vacia
     inviertala
   sino nada mas,
   depositela en pila BB
+repita,
+tome de pila BB,
+si carta es del palo oros
+  depositela en pila CC  
+sino
+  deposite la carta en pila DD
+nada mas,
+tome de pila CC,
+si la carta es espadas
+  depositela en pila EE
+sino 
+  depositela en pila FF
+nada mas,
+mientras pila CC no esta vacia
+  tome de pila CC,
+  si la carta esta boca abajo
+    inviertala
+  sino nada mas,
+  si carta es de valor igual a 3
+    depositela en pila DD
+  sino 
+    si la carta es distinto de 7
+      deposite la carta en pila EE
+    sino 
+      deposite la carta en pila FF
+    nada mas
+  nada mas
 repita
 ;
 ucp ejecute con las siguientes cartas:
-la pila AA tiene un mazo de 20 cartas_^,
+la pila AA tiene un mazo de 1 cartas_^,
 pila BB no tiene cartas,
-pila CC no tiene cartas
+pila CC tiene 1c -3 de oros -5c^- 7 de espadas - 4b - 3c^,
+pila DD no tiene cartas,
+pila EE no tiene cartas,
+pila FF no tiene cartas
 .

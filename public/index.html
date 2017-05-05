@@ -7,10 +7,12 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="css/timba.css">
+    <link rel="stylesheet" href="css/angular-json-tree.css">
     
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/angular.min.js"></script>
+    <script src="js/angular-json-tree.min.js"></script>
     
     
     <title>Timba</title>
@@ -25,12 +27,17 @@
       <button class="btn" ng-click="run()">Ejecutar</button>
       <button class="btn" ng-click="stop()">Parar</button>
       <button class="btn" ng-click="next()">Siguiente</button>
-      <select class="btn"  ng-model="selectedSpeed" ng-options="x for x in speeds"></select>
+      <select class="btn" ng-model="selectedSpeed" ng-options="x for x in speeds"></select>      
     </div>
     <div class="row" id="main_row">
       <div class="col-sm-4" id="editor_cont">
-        <div id="editor"></div>
-        <textarea id="salida" class="col-sm-12" ng-model="salida" rows="10"></textarea>
+        <div id="editor"></div>        
+        <div id="tree1" class="col-sm-6" >
+          <json-tree object="parsed" start-expanded="true"></json-tree>
+        </div>
+        <div id="tree2" class="col-sm-6" >
+          <json-tree object="exec_stack"></json-tree>
+        </div>
       </div>
       <div class="col-sm-8" id="canvas_cont">
         <canvas id="timbaCanvas" width="1200" height="1100"></canvas>

@@ -22,10 +22,17 @@ body{
   width: 100%;
   height: 60%;  
 }
-#salida{
+#tree1{
   height: 40%;   
 }
+#tree2{
+  height: 40%;   
+}
+
 #canvas_cont{
   height: 100%; 
   overflow-y: scroll 
+}
+textarea{
+  font-size: 8pt;
 }
